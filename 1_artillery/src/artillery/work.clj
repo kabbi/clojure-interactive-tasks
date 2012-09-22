@@ -15,7 +15,9 @@
 ;;; It always returns PI / 2 (missile is launched straight up).
 ;;; You can either calculate answer or find it by trying and adjusting different angles.
 (defn plane-static-solution []
-  (* 0.5 Math/PI))
+  (let [angleSin (/ 500 (* 2 259))
+        angle (- Math/PI (Math/asin angleSin))]
+  angle))
 
 ;;; Here's a function that will show you animation with plane you launching missiles.
 ;;; You need to pass your solution (function name) to this function and run this file.
@@ -33,12 +35,30 @@
 ;;; pl-x, pl-y - player's (your) coordinates.
 ;;; trg-x trg-y - target's coordinates.
 ;;; Run and see how it launches missile now and then fix it to hit the plane.
+
+; algorithm was calculated using some magic mathematical structures:
+; a pen and a copybook (and some spare time on mathematical analysis lecture)
+(defn solve-equation
+  [a b c]
+  (let [d (- (* b b) (* 4 a c))]
+    (/ (- (Math/sqrt d) b) (* 2 a))))
+(defn calc-plane-x
+  [plane-y player-x]
+  (let [b (* 2 player-x)
+        c (+ (* player-x player-x) (* plane-y plane-y))]
+  (solve-equation 3 b (- c))))
+(defn calc-angle
+  [x y]
+  (Math/asin (/ y 2 x)))
 (defn plane-dynamic-solution [pl-x pl-y trg-x trg-y]
-  (Math/atan2 (- trg-y pl-y) (- trg-x pl-x)))
+  (let [plane-x (calc-plane-x trg-y pl-x)
+        angle (calc-angle plane-x trg-y)
+        angle (if (> plane-x pl-x) angle (- Math/PI angle))]
+  angle))
 
 ;;; To run program uncomment - remove ';' symbol before '(plane-dynamic ...)'
 ;;; And also comment previous task - add ';' symbol before '(plane-static ...)'
-; (plane-dynamic plane-dynamic-solution)
+;(plane-dynamic plane-dynamic-solution)
 
 
 
@@ -55,14 +75,18 @@
 ;;; Now you don't have template function, so write one yourself.
 ;;; Hint: try to pass random angle at first e.g. 0.5 and see how it works.
 ;;; To run program uncomment it (and comment others) and pass your function to it.
-; (ufo-static YOUR_SOLUTION)
+(defn ufo-solution []
+  (* (rand) Math/PI))
+;(ufo-static ufo-solution)
 
 
 
 ;;; Same UFO, but now it appears at random position (same as plane-dynamic).
 ;;; Your position is also changing.
 ;;; You need to write function that takes 4 arguments: your position (x, y)  and UFO's position (x, y).
-; (ufo-dynamic YOUR_SOLUTION)
+(defn ufo-dynamic-solution [pl-x pl-y trg-x trg-y]
+  (* (rand) Math/PI))
+;(ufo-dynamic ufo-dynamic-solution)
 
 
 
