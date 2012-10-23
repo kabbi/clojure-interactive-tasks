@@ -3,7 +3,7 @@
 
 (def w 800)
 (def h 600)
-(def cell-size (atom 5))
+(def cell-size (atom 10))
 (defn board-width []
   (/ w @cell-size))
 (defn board-height []
@@ -59,13 +59,15 @@
         pressed-key   (raw-key)]
     (cond
       (= pressed-key \space)
-      (swap! running? not)
+        (swap! running? not)
       (= pressed-key \g)
-      (swap! draw-grid? not)
+        (swap! draw-grid? not)
       (= pressed-key \n)
-      (swap! current-state state-fn)
+        (swap! current-state state-fn)
       (= pressed-key \r)
-      (reset! current-state (state-fn)))))
+        (reset! current-state (state-fn))
+      (= pressed-key \c)
+        (reset! current-state {}))))
 (defn mouse-handler [switch-cell-fn]
   (let [current-state   (state :current-state)
         mouse-coord     [(mouse-x) (mouse-y)]
@@ -75,9 +77,9 @@
         pressed-button  (mouse-button)]
     (cond
       (= pressed-button :left)
-      (swap! current-state assoc cell-coord new-value))
+        (swap! current-state assoc cell-coord new-value))
       #_(= pressed-button :right)
-      #_(swap! current-state assoc cell-coord nil)))
+        #_(swap! current-state assoc cell-coord nil)))
 
 (defn simulate [state-fn cell-colors switch-cell-fn]
   (sketch 
