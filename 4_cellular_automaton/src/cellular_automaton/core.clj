@@ -20,7 +20,7 @@
   (text-mode :screen)
   (text-align :center)
   (set-state! :running? (atom nil)
-              :draw-grid? (atom nil)
+              :draw-grid? (atom true)
               :current-state (atom (state-fn))))
 
 (defn to-real-coords [cell]
@@ -67,7 +67,9 @@
       (= pressed-key \r)
         (reset! current-state (state-fn))
       (= pressed-key \c)
-        (reset! current-state {}))))
+        (reset! current-state {})
+      (= pressed-key \p)
+        (println @current-state))))
 (defn mouse-handler [switch-cell-fn]
   (let [current-state   (state :current-state)
         mouse-coord     [(mouse-x) (mouse-y)]
