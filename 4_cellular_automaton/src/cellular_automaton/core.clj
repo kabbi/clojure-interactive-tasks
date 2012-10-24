@@ -3,7 +3,7 @@
 
 (def w 800)
 (def h 600)
-(def cell-size (atom 10))
+(def cell-size (atom 2))
 (defn board-width []
   (/ w @cell-size))
 (defn board-height []

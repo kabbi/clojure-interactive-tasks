@@ -64,9 +64,9 @@
 ;;; Brian's Brain (http://en.wikipedia.org/wiki/Brian%27s_Brain)
 
 (defn bb-filter-cells [cells state]
-	(reduce #(apply assoc % %2) {} (filter #(= (val %) state) cells)))
+	(into {} (filter #(= (val %) state) cells)))
 (defn bb-filter-dead [cells]
-	(reduce #(apply assoc % %2) {} (filter val cells)))
+	(into {} (filter val cells)))
 
 (defn bb-neighbours [[[x y] _]]
 	(for [dx [-1 0 1] dy [-1 0 1] :when (not= 0 dx dy)]
@@ -97,14 +97,14 @@
 		(= old-state :on) :dying
 		(= old-state :dying) nil))
 
-#_(start-simulation
+(start-simulation
 	brian-brain bb-cell-colors bb-switch-cell)
 
 ;;; Langton's ant (http://en.wikipedia.org/wiki/Langton%27s_ant)
 ; NOT YET IMPLEMENTED
 #_(
 (defn ant-filter-dead [cells]
-	(reduce #(apply assoc % %2) {} (filter val cells)))
+	(into {} (filter val cells)))
 
 (defn ant-turn-left []
 	)
@@ -136,9 +136,9 @@
 ; NOT YET IMPLEMENTED
 
 (defn ww-filter-cells [cells state]
-	(reduce #(apply assoc % %2) {} (filter #(= (val %) state) cells)))
+	(into {} (filter #(= (val %) state) cells)))
 (defn ww-filter-empty [cells]
-	(reduce #(apply assoc % %2) {} (filter val cells)))
+	(into {} (filter val cells)))
 
 (defn ww-neighbours [[x y]]
 	(for [dx [-1 0 1] dy [-1 0 1] :when (not= 0 dx dy)]
@@ -189,7 +189,7 @@
 		(= old-state :head) :tail
 		(= old-state :tail) nil))
 
-(start-simulation
+#_(start-simulation
 	wire-world ww-cell-colors ww-switch-cell)
 
 
