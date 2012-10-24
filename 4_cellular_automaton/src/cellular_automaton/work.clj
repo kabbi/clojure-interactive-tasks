@@ -133,7 +133,6 @@
 )
 
 ;;; Wireworld (http://en.wikipedia.org/wiki/Wireworld)
-; NOT YET IMPLEMENTED
 
 (defn ww-filter-cells [cells state]
 	(into {} (filter #(= (val %) state) cells)))
