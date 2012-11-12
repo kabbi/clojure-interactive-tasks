@@ -52,10 +52,14 @@
 (defn move-clusters [clusters points]
 	(reduce #(assoc % (calc-center (val %2)) (val %2)) {} (map-points-to-clusters clusters points)))
 
+(defn clusters-stabilized? [old-state new-state]
+	(= (set (keys old-state)) (set (keys new-state))))
+
 ;;; Currently this is not really finished :)
 (defn process-clusters [points]
 	(let [clusters (atom (move-clusters (choose-starting-clasters points) points))]
-		(dotimes [_ 10] (swap! clusters #(move-clusters (keys %) points)))
+		(while (not (clusters-stabilized? @clusters (move-clusters (keys @clusters) points)))
+			(swap! clusters #(move-clusters (keys %) points)))
 		@clusters))
 
 (defn k-means [points]
