@@ -30,20 +30,17 @@
 (defn dist-sqr [[x1 y1] [x2 y2]]
 	(+ (sqr (- x1 x2)) (sqr (- y1 y2))))
 
-(defn choose-starting-clasters [points]
+(defn choose-starting-clusters [points]
 	(take @K (shuffle points)))
 
 (defn which-cluster [clusters point]
-	(let [dist-map (zipmap (map #(dist-sqr % point) clusters) clusters)]
-		(dist-map (apply min (keys dist-map)))))
+	(apply min-key #(dist-sqr % point) clusters))
 
 (defn average [data]
 	(/ (apply + data) (count data)))
 
 (defn map-points-to-clusters [clusters points]
-	(reduce #(merge-with conj % {(which-cluster clusters %2) %2})
-		(zipmap clusters (repeat []))
-		points))
+	(group-by #(which-cluster clusters %) points))
 
 (defn calc-center [points]
 	[(average (map first points))
@@ -55,12 +52,12 @@
 (defn clusters-stabilized? [old-state new-state]
 	(= (set (keys old-state)) (set (keys new-state))))
 
-;;; Currently this is not really finished :)
 (defn process-clusters [points]
-	(let [clusters (atom (move-clusters (choose-starting-clasters points) points))]
-		(while (not (clusters-stabilized? @clusters (move-clusters (keys @clusters) points)))
-			(swap! clusters #(move-clusters (keys %) points)))
-		@clusters))
+	(loop [old-clusters (move-clusters (choose-starting-clusters points) points)]
+		(let [new-clusters (move-clusters (keys old-clusters) points)]
+			(if (clusters-stabilized? old-clusters new-clusters)
+				new-clusters
+				(recur new-clusters)))))
 
 (defn k-means [points]
 	(vec (vals (process-clusters points))))
