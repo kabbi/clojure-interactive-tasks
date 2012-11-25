@@ -104,7 +104,7 @@
     :walls (atom walls)
     :apples (atom (with-meta #{} {:num num-of-apples})))
    (->> [:snake :apples :walls] (map state) (apply update-apples))
-   (frame-rate 10)))
+   (frame-rate 20)))
 
 (defn run [num-of-apples walls grow? solution]
   (let [update (update-fn solution)]
