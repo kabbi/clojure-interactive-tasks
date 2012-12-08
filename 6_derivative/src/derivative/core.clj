@@ -27,8 +27,64 @@
 ;;; (derivative '(+ x x)) => 2 or '(+ 1 1)
 ;;; (derivative '(sin (* 2 x))) => (* 2 (cos (* 2 x))) or it's equilavent.
 
-(defn derivative [expr]
-  expr)
+(defn get-expr [& args]
+  (reverse (into '() args)))
+(defn expr-type [expr]
+  (if (coll? expr)
+    (first expr)
+    (cond
+      (= expr 'x) :variable
+      (number? expr) :number)))
+
+(defmulti derivative expr-type)
+(defmethod derivative
+  :default [expr]
+  (throw (Exception. (str "Bad expression " expr))))
+(defmethod derivative
+  :variable [expr]
+  1)
+(defmethod derivative
+  :number [expr]
+  0)
+(defmethod derivative
+  '+ [expr]
+  (let [a (nth expr 1) b (nth expr 2)]
+    (get-expr '+ (derivative a) (derivative b))))
+(defmethod derivative
+  '- [expr]
+  (let [a (nth expr 1) b (nth expr 2)]
+    (get-expr '- (derivative a) (derivative b))))
+(defmethod derivative
+  '* [expr]
+  (let [a (nth expr 1) b (nth expr 2)]
+    (get-expr '+
+      (get-expr '* (derivative a) b)
+      (get-expr '* a (derivative b)))))
+(defmethod derivative
+  '/ [expr]
+  (let [a (nth expr 1) b (nth expr 2)]
+    (get-expr '/
+      (get-expr '-
+        (get-expr '* (derivative a) b)
+        (get-expr '* a (derivative b)))
+      (get-expr '* b b))))
+(defmethod derivative
+  'sin [expr]
+  (let [a (second expr)]
+    (get-expr '*
+      (get-expr 'cos a)
+      (derivative a))))
+(defmethod derivative
+  'cos [expr]
+  (let [a (second expr)]
+    (get-expr '- 0 
+      (get-expr '*
+        (get-expr 'sin a)
+        (derivative a)))))
+(defmethod derivative
+  'log [expr]
+  (let [a (second expr)]
+    (get-expr '/ (derivative a) a)))
 
 
 ;;; Tests.
